@@ -1,6 +1,7 @@
 HELP.md
 target/
 logs/
+backend\src\main\resources\application-mysql-dev.properties
 
 .mvn/
 mvnw
