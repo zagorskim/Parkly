@@ -26,8 +26,8 @@ public class MainConfig {
 
     private static final Map<String, String> envPropertiesMap = System.getenv();
 
-    public MainConfig(@Value(value = "${cors.urls}") String corsUrls,
-                      @Value(value = "${cors.mappings}") String corsMappings) {
+    public MainConfig(@Value(value = "parkly-database.mysql.database.azure.com") String corsUrls,
+                      @Value(value = "/") String corsMappings) {
         this.corsUrls = corsUrls;
         this.corsMappings = corsMappings;
     }
