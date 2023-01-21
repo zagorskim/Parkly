@@ -36,6 +36,7 @@ public class UserController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)) }
             )
     })
+
     @PostMapping(path = "")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
         User newUser = userService.validateAndSave(UserDto.convertToUser(user));

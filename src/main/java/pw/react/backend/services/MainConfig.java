@@ -61,6 +61,11 @@ public class MainConfig {
     }
 
     @Bean
+    public ParkingLotService parkingLotService(ParkingLotRepository parkingLotRepository) {
+        return new ParkingLotMainService(parkingLotRepository);
+    }
+
+    @Bean
     public LogoService logoService(CompanyLogoRepository companyLogoRepository) {
         return new CompanyLogoService(companyLogoRepository);
     }
