@@ -20,6 +20,9 @@ public class User implements UserDetails {
     @Column
     private String email;
 
+    @Column(name = "user_type")
+    private String role;
+
     public Long getId() {
         return id;
     }
