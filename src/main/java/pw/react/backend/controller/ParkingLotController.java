@@ -16,7 +16,7 @@ import pw.react.backend.web.UserDto;
 
 @RestController
 @RequestMapping(path = "/Parkings")
-@Profile({"!jwt"})
+//@Profile({"!jwt"})
 public class ParkingLotController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
