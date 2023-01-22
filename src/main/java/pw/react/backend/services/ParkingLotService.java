@@ -2,6 +2,8 @@ package pw.react.backend.services;
 
 import pw.react.backend.exceptions.ResourceNotFoundException;
 import pw.react.backend.models.ParkingLot;
+import pw.react.backend.models.Reservation;
+import pw.react.backend.web.ReservationDto;
 
 public interface ParkingLotService {
     boolean deleteParkingLot(Long parkingLotId);
@@ -9,4 +11,9 @@ public interface ParkingLotService {
 
     ParkingLot validateAndSave(ParkingLot convertToParkingLot);
 
+    ParkingLot getParkingLot(Long parkingId);
+
+    Reservation bookParkingLot(ReservationDto reservationDto);
+
+    boolean cancelReservation(Long reservationId);
 }

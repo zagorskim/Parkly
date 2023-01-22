@@ -61,8 +61,13 @@ public class MainConfig {
     }
 
     @Bean
-    public ParkingLotService parkingLotService(ParkingLotRepository parkingLotRepository) {
-        return new ParkingLotMainService(parkingLotRepository);
+    public ParkingLotService parkingLotService(ParkingLotRepository parkingLotRepository, ReservationService reservationService, UserRepository userRepository) {
+        return new ParkingLotMainService(parkingLotRepository, reservationService, userRepository);
+    }
+
+    @Bean
+    public ReservationService reservationService(ReservationRepository reservationRepository) {
+        return new ReservationMainService(reservationRepository);
     }
 
     @Bean

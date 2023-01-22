@@ -21,12 +21,12 @@ public class Reservation implements Serializable{
     private String description;
 
     @Column
-    @Reference(Company.class)
-    private long companyId;
-
-    @Column
     @Reference(User.class)
     private long userId;
+
+    @Column
+    @Reference(ParkingLot.class)
+    private long parkingId;
 
     @Column
     private LocalDateTime startDateTime;
@@ -50,20 +50,20 @@ public class Reservation implements Serializable{
         this.description = description;
     }
 
-    public long getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(long companyId) {
-        this.companyId = companyId;
-    }
-
     public long getUserId() {
         return userId;
     }
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public long getParkingId() {
+        return parkingId;
+    }
+
+    public void setParkingId(long parkingId) {
+        this.parkingId = parkingId;
     }
 
     public LocalDateTime getStartDateTime() {
