@@ -13,7 +13,8 @@ import pw.react.backend.security.services.JwtUserDetailsService;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/authenticate")
+@RequestMapping(path = JwtAuthenticationController.AUTHENTICATION_PATH)
+@Profile({"jwt"})
 public class JwtAuthenticationController {
 
     public static final String AUTHENTICATION_PATH = "/authenticate";
