@@ -110,7 +110,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<!--<jvmArguments>
-						-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+						-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,name=5005
 					</jvmArguments>-->
 					<profiles>
 						<profile>prod-azure-mysql</profile>
