@@ -7,6 +7,11 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
 
+enum UserType{
+    BASIC,
+    SUPER
+}
+
 @Entity
 @Table
 public class User implements UserDetails {
@@ -20,8 +25,8 @@ public class User implements UserDetails {
     @Column
     private String email;
 
-    @Column(name = "user_type")
-    private String role;
+    @Column(name = "type")
+    private UserType userType;
 
     public Long getId() {
         return id;
@@ -56,6 +61,13 @@ public class User implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void setUserType(UserType userType) {this.userType = userType;}
+    public void setUserType(String userType) {this.userType = Enum.valueOf(UserType.class, userType);}
+
+    public UserType getUserType() {return userType;}
+
+    public String getUserTypeString() {return userType.toString();}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
