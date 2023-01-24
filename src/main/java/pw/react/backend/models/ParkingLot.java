@@ -19,6 +19,9 @@ public class ParkingLot implements Serializable {
     private String description;
 
     @Column
+    private String name;
+
+    @Column
     private String photo;
 
     @Column
@@ -51,6 +54,10 @@ public class ParkingLot implements Serializable {
     public String getDescription() {
         return description;
     }
+
+    public void setName(String address) {this.name = address;}
+
+    public String getName() {return name;}
 
     public void setPhoto(String photo) {
         this.photo = photo;
