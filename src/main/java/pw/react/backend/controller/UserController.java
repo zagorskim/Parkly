@@ -17,7 +17,7 @@ import pw.react.backend.web.UserDto;
 
 @RestController
 @RequestMapping(path = "/users")
-@Profile({"!jwt"})
+@Profile({"jwt"})
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
