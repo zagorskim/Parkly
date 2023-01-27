@@ -51,7 +51,7 @@ public class UserMainService implements UserService {
                 throw new UserValidationException("Empty user password.");
             }
             if (!isValid(user.getEmail())) {
-                log.error("UEmpty email.");
+                log.error("Empty email.");
                 throw new UserValidationException("Empty email.");
             }
             return true;

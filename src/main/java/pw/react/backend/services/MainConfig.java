@@ -56,23 +56,13 @@ public class MainConfig {
     }
 
     @Bean
-    public CompanyService companyMainService(CompanyRepository companyRepository) {
-        return new CompanyMainService(companyRepository);
+    public ParkingLotService parkingLotService(ParkingLotRepository parkingLotRepository) {
+        return new ParkingLotMainService(parkingLotRepository);
     }
 
     @Bean
-    public ParkingLotService parkingLotService(ParkingLotRepository parkingLotRepository, ReservationService reservationService, UserRepository userRepository) {
-        return new ParkingLotMainService(parkingLotRepository, reservationService, userRepository);
-    }
-
-    @Bean
-    public ReservationService reservationService(ReservationRepository reservationRepository) {
-        return new ReservationMainService(reservationRepository);
-    }
-
-    @Bean
-    public LogoService logoService(CompanyLogoRepository companyLogoRepository) {
-        return new CompanyLogoService(companyLogoRepository);
+    public ReservationService reservationService(ReservationRepository reservationRepository, ParkingLotRepository parkingRepository) {
+        return new ReservationMainService(reservationRepository, parkingRepository);
     }
 
     @Bean

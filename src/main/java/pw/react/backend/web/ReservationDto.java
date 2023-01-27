@@ -2,19 +2,19 @@ package pw.react.backend.web;
 
 import pw.react.backend.models.Reservation;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record ReservationDto(long reservationId,
                              String description,
                              long userId,
                              long parkingId,
 
-                             LocalDateTime startDate,
-                             LocalDateTime endDate) {
+                             LocalDate startDate,
+                             LocalDate endDate) {
     public static final ReservationDto EMPTY = new ReservationDto(-1, "", -1, -1, null, null);
 
     public static ReservationDto valueFrom(Reservation reservation) {
-        return new ReservationDto(reservation.getId(), reservation.getDescription(), reservation.getUserId(), reservation.getParkingId(), reservation.getStartDateTime(), reservation.getEndDateTime());
+        return new ReservationDto(reservation.getId(), reservation.getDescription(), reservation.getUserId(), reservation.getParkingId(), reservation.getStartDate(), reservation.getEndDate());
     }
 
     public static Reservation convertToReservation(ReservationDto reservationDto){
@@ -23,8 +23,8 @@ public record ReservationDto(long reservationId,
         reservation.setDescription(reservationDto.description());
         reservation.setParkingId(reservationDto.parkingId());
         reservation.setUserId(reservationDto.userId());
-        reservation.setStartDateTime(reservationDto.startDate());
-        reservation.setEndDateTime(reservationDto.endDate());
+        reservation.setStartDate(reservationDto.startDate());
+        reservation.setEndDate(reservationDto.endDate());
         return reservation;
     }
 }

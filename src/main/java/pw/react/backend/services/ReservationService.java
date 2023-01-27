@@ -6,4 +6,5 @@ public interface ReservationService {
     Reservation makeReservation(Reservation reservation);
 
     boolean deleteReservation(Long reservationId);
+    boolean createReservation(Reservation reservation);
 }

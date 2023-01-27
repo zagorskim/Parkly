@@ -9,11 +9,7 @@ public interface ParkingLotService {
     boolean deleteParkingLot(Long parkingLotId);
     ParkingLot updateParkingLot(Long id, ParkingLot updatedParkingLot) throws ResourceNotFoundException;
 
-    ParkingLot validateAndSave(ParkingLot convertToParkingLot);
+    void validateAndSave(ParkingLot convertToParkingLot);
 
     ParkingLot getParkingLot(Long parkingId);
-
-    Reservation bookParkingLot(ReservationDto reservationDto);
-
-    boolean cancelReservation(Long reservationId);
 }

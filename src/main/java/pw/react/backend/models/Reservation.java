@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Reference;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "reservations")
@@ -29,10 +29,10 @@ public class Reservation implements Serializable{
     private long parkingId;
 
     @Column
-    private LocalDateTime startDateTime;
+    private LocalDate startDate;
 
     @Column
-    private LocalDateTime endDateTime;
+    private LocalDate endDate;
 
     public long getId() {
         return id;
@@ -66,19 +66,19 @@ public class Reservation implements Serializable{
         this.parkingId = parkingId;
     }
 
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

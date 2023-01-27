@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.backend.models.User;
@@ -33,12 +34,19 @@ public class JwtUserController {
         userService.setPasswordEncoder(passwordEncoder);
     }
 
-    @PostMapping(path = "")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    @PostMapping(path = "/create")
+    public ResponseEntity<Void> createUser(@RequestBody UserDto userDto) {
         User user = UserDto.convertToUser(userDto);
         user = userService.validateAndSave(user);
         log.info("Password is going to be encoded.");
         userService.updatePassword(user, user.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserDto.valueFrom(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @GetMapping(path = "/getCurrent")
+    public ResponseEntity<UserDto> getCurrentUser() {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        user.setPassword("");
+        return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
     }
 }
