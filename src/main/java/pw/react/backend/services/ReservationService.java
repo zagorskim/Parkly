@@ -1,10 +1,10 @@
 package pw.react.backend.services;
 
 import pw.react.backend.models.Reservation;
+import java.util.List;
 
 public interface ReservationService {
-    Reservation makeReservation(Reservation reservation);
-
+    List<Reservation> getReservations(int pageNo);
     boolean deleteReservation(Long reservationId);
     boolean createReservation(Reservation reservation);
 }

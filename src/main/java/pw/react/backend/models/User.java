@@ -7,11 +7,6 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
 
-enum UserType{
-    BASIC,
-    SUPER
-}
-
 @Entity
 @Table
 public class User implements UserDetails {
