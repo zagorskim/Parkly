@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.backend.models.User;
+import pw.react.backend.models.UserType;
 import pw.react.backend.services.UserService;
 import pw.react.backend.web.UserDto;
 
@@ -34,13 +35,17 @@ public class JwtUserController {
         userService.setPasswordEncoder(passwordEncoder);
     }
 
-    @PostMapping(path = "/create")
+    @PutMapping(path = "/createOrUpdate")
     public ResponseEntity<Void> createUser(@RequestBody UserDto userDto) {
+        User callingUser = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(callingUser.getUserType() != UserType.SUPER) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         User user = UserDto.convertToUser(userDto);
         user = userService.validateAndSave(user);
         log.info("Password is going to be encoded.");
         userService.updatePassword(user, user.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping(path = "/getCurrent")

@@ -14,9 +14,12 @@ import pw.react.backend.web.ParkingLotDto;
 import pw.react.backend.web.ReservationDto;
 import pw.react.backend.web.UserDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/parkings")
-//@Profile({"!jwt"})
+@Profile({"jwt"})
 public class ParkingLotController {
 
     private static final Logger log = LoggerFactory.getLogger(JwtUserController.class);
@@ -27,18 +30,23 @@ public class ParkingLotController {
         this.parkingLotService = parkingLotService;
     }
 
-    @PutMapping(path = "/addOrUpdate")
+    @PutMapping(path = "/createOrUpdate")
     public ResponseEntity<Void> addOrUpdateParkingLot(@RequestBody ParkingLotDto parkingLotDto) {
         parkingLotService.validateAndSave(ParkingLotDto.convertToParkingLot(parkingLotDto));
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    // get all parking lots sorted using filters in body (why parkingId then?)
-    /*@GetMapping(path = "/{parkingId}")
-    public ResponseEntity<ParkingLotDto> getParkingLot(@PathVariable long parkingId) {
-        ParkingLot parkingLot = parkingLotService.getParkingLot(parkingId);
-        return ResponseEntity.status(HttpStatus.OK).body(ParkingLotDto.valueFrom(parkingLot));
-    }*/
+    @GetMapping(path = "/getPage/{pageNo}/sortDescending/{sortDescending}")
+    public ResponseEntity<List<ParkingLotDto>> getParkingLot(@PathVariable int pageNo,
+                                                             @PathVariable boolean sortDescending,
+                                                             @RequestBody String filter) {
+        List<ParkingLot> parkingLots = parkingLotService.getParkingLots(pageNo, sortDescending, filter);
+        List<ParkingLotDto> parkingLotsDto = new ArrayList<ParkingLotDto>();
+        for(ParkingLot parkingLot : parkingLots) {
+            parkingLotsDto.add(ParkingLotDto.valueFrom(parkingLot));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(parkingLotsDto);
+    }
 
     @DeleteMapping(path = "/cancel/{parkingId}")
     public ResponseEntity<Void> cancelParkingLot(@PathVariable long parkingId) {
