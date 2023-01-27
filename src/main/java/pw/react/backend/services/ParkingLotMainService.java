@@ -5,12 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestHeader;
 import pw.react.backend.dao.ParkingLotRepository;
-import pw.react.backend.dao.UserRepository;
+import pw.react.backend.exceptions.ParkingLotValidationException;
 import pw.react.backend.exceptions.ResourceNotFoundException;
 import pw.react.backend.exceptions.UserValidationException;
 import pw.react.backend.models.ParkingLot;
-import pw.react.backend.models.Reservation;
-import pw.react.backend.web.ReservationDto;
 
 import java.util.Optional;
 
@@ -18,91 +16,69 @@ import static java.util.stream.Collectors.joining;
 
 public class ParkingLotMainService implements ParkingLotService{
 
-    private final Logger logger = LoggerFactory.getLogger(ParkingLotMainService.class);
+    private final Logger log = LoggerFactory.getLogger(ParkingLotMainService.class);
 
-    private final ParkingLotRepository parkingLotRepository;
+    private final ParkingLotRepository repository;
 
-    private final UserRepository userRepository;
-
-    private final ReservationService reservationService;
-
-    ParkingLotMainService(ParkingLotRepository parkingLotRepository, ReservationService reservationService, UserRepository userRepository) {
-
-        this.parkingLotRepository = parkingLotRepository;
-
-        this.reservationService = reservationService;
-
-        this.userRepository = userRepository;
+    ParkingLotMainService(ParkingLotRepository parkingLotRepository) {
+        this.repository = parkingLotRepository;
     }
 
 
     @Override
     public boolean deleteParkingLot(Long parkingLotId) {
-        boolean result = false;
-        if (parkingLotRepository.existsById(parkingLotId)) {
-            parkingLotRepository.deleteById(parkingLotId);
-            logger.info("Company with id {} deleted.", parkingLotId);
-            result = true;
+        if (repository.existsById(parkingLotId)) {
+            repository.deleteById(parkingLotId);
+            log.info("Parking lot with id {} deleted.", parkingLotId);
+            return true;
         }
-        return result;
+        return false;
     }
 
     @Override
     public ParkingLot updateParkingLot(Long id, ParkingLot updatedParkingLot) throws ResourceNotFoundException {
-        if (parkingLotRepository.existsById(id)) {
+        if (repository.existsById(id)) {
             updatedParkingLot.setId(id);
-            ParkingLot result = parkingLotRepository.save(updatedParkingLot);
-            logger.info("Parking lot with id {} updated.", id);
+            ParkingLot result = repository.save(updatedParkingLot);
+            log.info("Parking lot with id {} updated.", id);
             return result;
         }
         throw new ResourceNotFoundException(String.format("Parking lot with id [%d] not found.", id));
     }
 
     @Override
-    public ParkingLot validateAndSave(ParkingLot parkingLot) {
-        if (isValidUser(parkingLot)) {
-            logger.info("Parking lot is valid");
-            Optional<ParkingLot> dbParkingLot = parkingLotRepository.findById(parkingLot.getId());
-            if (dbParkingLot.isPresent()) {
-                logger.info("Parking lot already exists. Updating it.");
-                parkingLot.setId(dbParkingLot.get().getId());
-            }
-            parkingLot = parkingLotRepository.save(parkingLot);
-            logger.info("Parking lot was saved.");
+    public void validateAndSave(ParkingLot parkingLot) {
+        if (isValidParkingLot(parkingLot)) {
+            log.info("Parking lot is valid");
+            parkingLot = repository.save(parkingLot);
+            log.info("Parking lot was saved.");
         }
-        return parkingLot;
     }
 
     @Override
     public ParkingLot getParkingLot(Long parkingId) {
-            return parkingLotRepository.findById(parkingId)
+            return repository.findById(parkingId)
                     .orElseThrow(() -> new ResourceNotFoundException(String.format("Parking lot with %d does not exist", parkingId)));
     }
 
-    @Override
-    public Reservation bookParkingLot(ReservationDto reservationDto) {
-        if (parkingLotRepository.existsById(reservationDto.parkingId()) && userRepository.existsById(reservationDto.userId())) {
-            return reservationService.makeReservation(ReservationDto.convertToReservation(reservationDto));
-        }
-        throw new ResourceNotFoundException(String.format("Parking lot (id %d) or user (id %d) does not exist", reservationDto.parkingId(), reservationDto.userId()));
-    }
-
-    @Override
-    public boolean cancelReservation(Long reservationId) {
-        return reservationService.deleteReservation(reservationId);
-    }
-
-
-    private boolean isValidUser(ParkingLot parkingLot) {
+    private boolean isValidParkingLot(ParkingLot parkingLot) {
         if (parkingLot != null) {
             if (!isValid(parkingLot.getDescription())) {
-                logger.error("Empty parking lot name.");
-                throw new UserValidationException("Empty parking lot name.");
+                log.error("Empty parking lot name.");
+                throw new ParkingLotValidationException("Empty parking lot name.");
+            }
+            if(parkingLot.getCapacity() <= 0) {
+                log.error("Invalid capacity.");
+                throw new ParkingLotValidationException("Invalid capacity.");
+            }
+            if(parkingLot.getPricePerDay() < 0) {
+                log.error("Invalid price.");
+                throw new ParkingLotValidationException("Invalid price.");
             }
             return true;
         }
-        logger.error("Parking lot is null.");
-        throw new UserValidationException("Parking lot is null.");
+        log.error("Parking lot is null.");
+        throw new ParkingLotValidationException("Parking lot is null.");
     }
 
     private boolean isValid(String value) {
@@ -110,7 +86,7 @@ public class ParkingLotMainService implements ParkingLotService{
     }
 
     private void logHeaders(@RequestHeader HttpHeaders headers) {
-        logger.info("Controller request headers {}",
+        log.info("Controller request headers {}",
                 headers.entrySet()
                         .stream()
                         .map(entry -> String.format("%s->[%s]", entry.getKey(), String.join(",", entry.getValue())))

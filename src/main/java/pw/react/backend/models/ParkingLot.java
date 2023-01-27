@@ -25,7 +25,7 @@ public class ParkingLot implements Serializable {
     private String photo;
 
     @Column
-    private String pricePerDay;
+    private double pricePerDay;
 
     @Column
     private double latitude;
@@ -38,6 +38,9 @@ public class ParkingLot implements Serializable {
 
     @Column
     private String parkingLotType;
+
+    @Column
+    private int capacity;
 
     public void setId(Long id) {
         this.id = id;
@@ -67,11 +70,11 @@ public class ParkingLot implements Serializable {
         return photo;
     }
 
-    public void setPricePerDay(String pricePerDay) {
+    public void setPricePerDay(double pricePerDay) {
         this.pricePerDay = pricePerDay;
     }
 
-    public String getPricePerDay() {
+    public double getPricePerDay() {
         return pricePerDay;
     }
 
@@ -103,5 +106,9 @@ public class ParkingLot implements Serializable {
     public String getParkingLotType() {
         return parkingLotType;
     }
+
+    public void setCapacity(int capacity) { this.capacity = capacity; }
+
+    public int getCapacity() { return capacity; }
 
 }

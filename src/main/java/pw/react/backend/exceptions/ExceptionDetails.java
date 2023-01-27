@@ -6,23 +6,23 @@ import org.springframework.http.HttpStatus;
 import pw.react.backend.utils.JsonDateDeserializer;
 import pw.react.backend.utils.JsonDateSerializer;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ExceptionDetails {
     @JsonDeserialize(using = JsonDateDeserializer.class)
     @JsonSerialize(using = JsonDateSerializer.class)
-    private final LocalDateTime timestamp;
+    private final LocalDate timestamp;
     private final HttpStatus status;
     private final String errorMessage;
     private String path;
 
     public ExceptionDetails(HttpStatus status, String errorMessage) {
-        timestamp = LocalDateTime.now();
+        timestamp = LocalDate.now();
         this.status = status;
         this.errorMessage = errorMessage;
     }
 
-    public LocalDateTime getTimestamp() {
+    public LocalDate getTimestamp() {
         return timestamp;
     }
 
