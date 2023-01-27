@@ -15,11 +15,11 @@ import pw.react.backend.web.ReservationDto;
 import pw.react.backend.web.UserDto;
 
 @RestController
-@RequestMapping(path = "/Parkings")
+@RequestMapping(path = "/parkings")
 //@Profile({"!jwt"})
 public class ParkingLotController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtUserController.class);
 
     private final ParkingLotService parkingLotService;
 
@@ -27,33 +27,25 @@ public class ParkingLotController {
         this.parkingLotService = parkingLotService;
     }
 
-
-    @GetMapping(path = "")
-    public ResponseEntity<ParkingLotDto> createParkingLot(@RequestBody ParkingLotDto parkingLotDto) {
-        ParkingLot newParkingLot = parkingLotService.validateAndSave(ParkingLotDto.convertToParkingLot(parkingLotDto));
-        return ResponseEntity.status(HttpStatus.CREATED).body(ParkingLotDto.valueFrom(newParkingLot));
+    @PutMapping(path = "/addOrUpdate")
+    public ResponseEntity<Void> addOrUpdateParkingLot(@RequestBody ParkingLotDto parkingLotDto) {
+        parkingLotService.validateAndSave(ParkingLotDto.convertToParkingLot(parkingLotDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    // get all parking lots sorted using filters in body
-    @GetMapping(path = "/{parkingId}")
+    // get all parking lots sorted using filters in body (why parkingId then?)
+    /*@GetMapping(path = "/{parkingId}")
     public ResponseEntity<ParkingLotDto> getParkingLot(@PathVariable long parkingId) {
         ParkingLot parkingLot = parkingLotService.getParkingLot(parkingId);
         return ResponseEntity.status(HttpStatus.OK).body(ParkingLotDto.valueFrom(parkingLot));
-    }
-
-    @PostMapping(path = "/book/{parkingId}")
-    public ResponseEntity<ReservationDto> bookParkingLot(@PathVariable long parkingId, @RequestBody UserDto userDto, @RequestBody ReservationDto reservationDto) {
-        Reservation reservation = parkingLotService.bookParkingLot(reservationDto);
-        return ResponseEntity.status(HttpStatus.OK).body(ReservationDto.valueFrom(reservation));
-    }
+    }*/
 
     @DeleteMapping(path = "/cancel/{parkingId}")
-    public ResponseEntity<ReservationDto> cancelParkingLot(@PathVariable long parkingId, @RequestBody UserDto userDto, @RequestBody ReservationDto reservationDto) {
-        boolean result = parkingLotService.cancelReservation(reservationDto.reservationId());
+    public ResponseEntity<Void> cancelParkingLot(@PathVariable long parkingId) {
+        boolean result = parkingLotService.deleteParkingLot(parkingId);
         if(result)
-            return ResponseEntity.status(HttpStatus.OK).body(reservationDto);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reservationDto);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
-
 }
