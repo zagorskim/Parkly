@@ -9,7 +9,9 @@ import pw.react.backend.exceptions.ParkingLotValidationException;
 import pw.react.backend.exceptions.ResourceNotFoundException;
 import pw.react.backend.exceptions.UserValidationException;
 import pw.react.backend.models.ParkingLot;
+import pw.react.backend.models.Reservation;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
@@ -24,6 +26,14 @@ public class ParkingLotMainService implements ParkingLotService{
         this.repository = parkingLotRepository;
     }
 
+    @Override
+    public List<ParkingLot> getParkingLots(int pageNo, boolean sortDescending, String filter) {
+        if(pageNo <= 0) {
+            return null;
+        }
+        List<ParkingLot> parkingLots = repository.findAll();
+        return parkingLots;
+    }
 
     @Override
     public boolean deleteParkingLot(Long parkingLotId) {
@@ -36,29 +46,12 @@ public class ParkingLotMainService implements ParkingLotService{
     }
 
     @Override
-    public ParkingLot updateParkingLot(Long id, ParkingLot updatedParkingLot) throws ResourceNotFoundException {
-        if (repository.existsById(id)) {
-            updatedParkingLot.setId(id);
-            ParkingLot result = repository.save(updatedParkingLot);
-            log.info("Parking lot with id {} updated.", id);
-            return result;
-        }
-        throw new ResourceNotFoundException(String.format("Parking lot with id [%d] not found.", id));
-    }
-
-    @Override
     public void validateAndSave(ParkingLot parkingLot) {
         if (isValidParkingLot(parkingLot)) {
             log.info("Parking lot is valid");
-            parkingLot = repository.save(parkingLot);
+            repository.save(parkingLot);
             log.info("Parking lot was saved.");
         }
-    }
-
-    @Override
-    public ParkingLot getParkingLot(Long parkingId) {
-            return repository.findById(parkingId)
-                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Parking lot with %d does not exist", parkingId)));
     }
 
     private boolean isValidParkingLot(ParkingLot parkingLot) {
@@ -83,14 +76,5 @@ public class ParkingLotMainService implements ParkingLotService{
 
     private boolean isValid(String value) {
         return value != null && !value.isBlank();
-    }
-
-    private void logHeaders(@RequestHeader HttpHeaders headers) {
-        log.info("Controller request headers {}",
-                headers.entrySet()
-                        .stream()
-                        .map(entry -> String.format("%s->[%s]", entry.getKey(), String.join(",", entry.getValue())))
-                        .collect(joining(","))
-        );
     }
 }

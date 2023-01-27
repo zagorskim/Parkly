@@ -11,17 +11,30 @@ import pw.react.backend.models.Reservation;
 import pw.react.backend.services.ReservationService;
 import pw.react.backend.web.ReservationDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/reservations")
-//@Profile({"jwt"})
+@Profile({"jwt"})
 public class ReservationController {
 
 	private static final Logger log = LoggerFactory.getLogger(JwtUserController.class);
 
 	private final ReservationService reservationService;
 
-	public ReservationController(ReservationService reservationService) {
+	public ReservationController(ReservationService reservationService, PasswordEncoder passwordEncoder) {
 		this.reservationService = reservationService;
+	}
+
+	@GetMapping(path = "/getPage/{pageNo}")
+	public ResponseEntity<List<ReservationDto>> getReservations(@PathVariable int pageNo) {
+		List<Reservation> reservations = reservationService.getReservations(pageNo);
+		List<ReservationDto> reservationsDto = new ArrayList<ReservationDto>();
+		for(Reservation reservation : reservations) {
+			reservationsDto.add(ReservationDto.valueFrom(reservation));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(reservationsDto);
 	}
 
 	@DeleteMapping(path = "/cancel/{reservationId}")
@@ -34,7 +47,7 @@ public class ReservationController {
 		}
 	}
 
-	@PutMapping(path = "/create")
+	@PostMapping(path = "/create")
 	public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
 		Reservation reservation = ReservationDto.convertToReservation(reservationDto);
 		boolean result = reservationService.createReservation(reservation);

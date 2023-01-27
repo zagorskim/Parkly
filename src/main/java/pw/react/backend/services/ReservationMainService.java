@@ -23,10 +23,12 @@ public class ReservationMainService implements ReservationService{
     }
 
     @Override
-    public Reservation makeReservation(Reservation reservation) {
-        Reservation result = repository.save(reservation);
-        log.info("Reservation with id {} created.", result.getId());
-        return result;
+    public List<Reservation> getReservations(int pageNo) {
+        if(pageNo <= 0) {
+            return null;
+        }
+        List<Reservation> reservations = repository.findAll();
+        return reservations;
     }
 
     @Override
