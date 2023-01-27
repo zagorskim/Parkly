@@ -20,7 +20,7 @@ public class ReservationController {
 
 	private final ReservationService reservationService;
 
-	public ReservationController(ReservationService reservationService, PasswordEncoder passwordEncoder) {
+	public ReservationController(ReservationService reservationService) {
 		this.reservationService = reservationService;
 	}
 
