@@ -3,12 +3,14 @@ package pw.react.backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.backend.models.Reservation;
 import pw.react.backend.services.ReservationService;
+import pw.react.backend.web.GetReservationsResponse;
 import pw.react.backend.web.ReservationDto;
 
 import java.util.ArrayList;
@@ -23,18 +25,20 @@ public class ReservationController {
 
 	private final ReservationService reservationService;
 
-	public ReservationController(ReservationService reservationService, PasswordEncoder passwordEncoder) {
+	public ReservationController(ReservationService reservationService) {
 		this.reservationService = reservationService;
 	}
 
 	@GetMapping(path = "/getPage/{pageNo}")
-	public ResponseEntity<List<ReservationDto>> getReservations(@PathVariable int pageNo) {
-		List<Reservation> reservations = reservationService.getReservations(pageNo);
-		List<ReservationDto> reservationsDto = new ArrayList<ReservationDto>();
+	public ResponseEntity<GetReservationsResponse> getReservations(@PathVariable int pageNo) {
+		Pair<Integer, List<Reservation>> returnedPair = reservationService.getReservations(pageNo);
+		int noOfPages = returnedPair.getFirst();
+		List<Reservation> reservations = returnedPair.getSecond();
+		List<ReservationDto> reservationsDto = new ArrayList<>();
 		for(Reservation reservation : reservations) {
 			reservationsDto.add(ReservationDto.valueFrom(reservation));
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(reservationsDto);
+		return ResponseEntity.status(HttpStatus.OK).body(new GetReservationsResponse(noOfPages, reservationsDto));
 	}
 
 	@DeleteMapping(path = "/cancel/{reservationId}")
@@ -48,7 +52,7 @@ public class ReservationController {
 	}
 
 	@PostMapping(path = "/create")
-	public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
+	public ResponseEntity<Void> createReservation(@RequestBody ReservationDto reservationDto) {
 		Reservation reservation = ReservationDto.convertToReservation(reservationDto);
 		boolean result = reservationService.createReservation(reservation);
 		if(result) {

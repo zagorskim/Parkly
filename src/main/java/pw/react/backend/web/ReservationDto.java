@@ -11,8 +11,6 @@ public record ReservationDto(long reservationId,
 
                              LocalDate startDate,
                              LocalDate endDate) {
-    public static final ReservationDto EMPTY = new ReservationDto(-1, "", -1, -1, null, null);
-
     public static ReservationDto valueFrom(Reservation reservation) {
         return new ReservationDto(reservation.getId(), reservation.getDescription(), reservation.getUserId(), reservation.getParkingId(), reservation.getStartDate(), reservation.getEndDate());
     }

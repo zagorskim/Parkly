@@ -2,12 +2,14 @@ package pw.react.backend.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import pw.react.backend.dao.ParkingLotRepository;
 import pw.react.backend.dao.ReservationRepository;
 import pw.react.backend.exceptions.ReservationValidationException;
 import pw.react.backend.models.Reservation;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 public class ReservationMainService implements ReservationService{
@@ -23,12 +25,19 @@ public class ReservationMainService implements ReservationService{
     }
 
     @Override
-    public List<Reservation> getReservations(int pageNo) {
+    public Pair<Integer, List<Reservation>> getReservations(int pageNo) {
         if(pageNo <= 0) {
             return null;
         }
         List<Reservation> reservations = repository.findAll();
-        return reservations;
+        long startIndex = (pageNo - 1)*50L;
+        long endIndex = Math.min(pageNo*50L, reservations.size());
+        if(startIndex >= reservations.size()) return null;
+        Collections.sort(reservations, (r1, r2) -> {
+            return (int)(r2.getParkingId() - r1.getParkingId());
+        });
+        int noOfPages = (reservations.size() - 1)/50 + 1;
+        return Pair.of(noOfPages, reservations.subList((int)startIndex, (int)endIndex));
     }
 
     @Override
