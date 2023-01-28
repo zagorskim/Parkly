@@ -9,6 +9,7 @@ import pw.react.backend.exceptions.ReservationValidationException;
 import pw.react.backend.models.Reservation;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,17 +27,18 @@ public class ReservationMainService implements ReservationService{
 
     @Override
     public Pair<Integer, List<Reservation>> getReservations(int pageNo) {
-        if(pageNo <= 0) {
-            return null;
-        }
         List<Reservation> reservations = repository.findAll();
+        int noOfPages = (reservations.size() - 1)/50 + 1;
+        if(reservations.size() == 0) noOfPages = 0;
+        if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));
+
         long startIndex = (pageNo - 1)*50L;
         long endIndex = Math.min(pageNo*50L, reservations.size());
-        if(startIndex >= reservations.size()) return null;
+        if(startIndex >= reservations.size()) return Pair.of(noOfPages, new ArrayList<>(0));
+
         Collections.sort(reservations, (r1, r2) -> {
             return (int)(r2.getParkingId() - r1.getParkingId());
         });
-        int noOfPages = (reservations.size() - 1)/50 + 1;
         return Pair.of(noOfPages, reservations.subList((int)startIndex, (int)endIndex));
     }
 
