@@ -23,18 +23,19 @@ public class ParkingLotMainService implements ParkingLotService{
 
     @Override
     public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filterString) {
-        if(pageNo <= 0) {
-            return null;
-        }
         List<ParkingLot> parkingLots = repository.findAll();
         parkingLots = filter(parkingLots, filterString);
+        int noOfPages = (parkingLots.size() - 1)/50 + 1;
+        if(parkingLots.size() == 0) noOfPages = 0;
+        if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));
+
         long startIndex = (pageNo - 1)*50L;
         long endIndex = Math.min(pageNo*50L, parkingLots.size());
-        if(startIndex >= parkingLots.size()) return null;
+        if(startIndex >= parkingLots.size()) return Pair.of(noOfPages, new ArrayList<>(0));
+
         Collections.sort(parkingLots, (p1, p2) -> {
             return sortDescending ? p2.getName().compareTo(p1.getName()) : p1.getName().compareTo(p2.getName());
         });
-        int noOfPages = (parkingLots.size() - 1)/50 + 1;
         return Pair.of(noOfPages, parkingLots.subList((int)startIndex, (int)endIndex));
     }
 
@@ -59,7 +60,7 @@ public class ParkingLotMainService implements ParkingLotService{
 
     private List<ParkingLot> filter(List<ParkingLot> parkingLots, String filterString) {
         filterString = filterString.toLowerCase();
-        List<ParkingLot> filteredParkingLots = new ArrayList<>();
+        List<ParkingLot> filteredParkingLots = new ArrayList<>(0);
         for(ParkingLot parkingLot : parkingLots) {
             if(parkingLot.getName().toLowerCase().contains(filterString)) {
                 filteredParkingLots.add(parkingLot);
