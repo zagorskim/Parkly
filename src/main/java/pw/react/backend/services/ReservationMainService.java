@@ -26,9 +26,10 @@ public class ReservationMainService implements ReservationService{
     }
 
     @Override
-    public Pair<Integer, List<Reservation>> getReservations(int pageNo) {
+    public Pair<Integer, List<Reservation>> getReservations(int pageNo, int filter) {
         List<Reservation> reservations = repository.findAll();
         if(pageNo == -1) return Pair.of(-1, reservations); // get all reservations
+        reservations = filter(reservations, filter);
         int noOfPages = (reservations.size() - 1)/50 + 1;
         if(reservations.size() == 0) noOfPages = 0;
         if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));
@@ -61,6 +62,17 @@ public class ReservationMainService implements ReservationService{
 
         repository.save(reservation);
         return true;
+    }
+
+    private List<Reservation> filter(List<Reservation> reservations, int filterInt) {
+        if(filterInt == -1) return reservations;
+        List<Reservation> filteredReservations = new ArrayList<>(0);
+        for(Reservation reservation : reservations) {
+            if(reservation.getUserId() == filterInt) {
+                filteredReservations.add(reservation);
+            }
+        }
+        return filteredReservations;
     }
 
     private boolean isValidReservation(Reservation reservation) {
