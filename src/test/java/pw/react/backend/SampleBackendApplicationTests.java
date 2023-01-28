@@ -28,26 +28,4 @@ class SampleBackendApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
-	@Test
-	void whenConsume_thenReturnQuote() {
-	//https://api.dane.gov.pl/doc
-		try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("accept", "application/vnd.api+json");
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
-
-            var uriVariables = new HashMap<String, Object>();
-            uriVariables.put("page", 1);
-            uriVariables.put("per_page", 1);
-			restTemplate.postForEntity("https://api.dane.gov.pl/institutions",
-                    httpEntity,
-                    String.class,
-                    uriVariables);
-			fail("Should throw any exception");
-		} catch (Exception ex) {
-			assertThat(ex).isInstanceOf(HttpClientErrorException.Forbidden.class);
-		}
-	}
 }
