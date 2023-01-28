@@ -2,19 +2,12 @@ package pw.react.backend.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.data.util.Pair;
 import pw.react.backend.dao.ParkingLotRepository;
 import pw.react.backend.exceptions.ParkingLotValidationException;
-import pw.react.backend.exceptions.ResourceNotFoundException;
-import pw.react.backend.exceptions.UserValidationException;
 import pw.react.backend.models.ParkingLot;
-import pw.react.backend.models.Reservation;
-
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.stream.Collectors.joining;
 
 public class ParkingLotMainService implements ParkingLotService{
 
@@ -27,12 +20,19 @@ public class ParkingLotMainService implements ParkingLotService{
     }
 
     @Override
-    public List<ParkingLot> getParkingLots(int pageNo, boolean sortDescending, String filter) {
+    public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filter) {
         if(pageNo <= 0) {
             return null;
         }
         List<ParkingLot> parkingLots = repository.findAll();
-        return parkingLots;
+        long startIndex = (pageNo - 1)*50L;
+        long endIndex = Math.min(pageNo*50L, parkingLots.size());
+        if(startIndex >= parkingLots.size()) return null;
+        Collections.sort(parkingLots, (p1, p2) -> {
+            return sortDescending ? p2.getName().compareTo(p1.getName()) : p1.getName().compareTo(p2.getName());
+        });
+        int noOfPages = (parkingLots.size() - 1)/50 + 1;
+        return Pair.of(noOfPages, parkingLots.subList((int)startIndex, (int)endIndex));
     }
 
     @Override
