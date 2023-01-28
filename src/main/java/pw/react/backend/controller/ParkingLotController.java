@@ -3,6 +3,7 @@ package pw.react.backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import pw.react.backend.models.ParkingLot;
 import pw.react.backend.models.Reservation;
 import pw.react.backend.services.ParkingLotService;
 import pw.react.backend.services.ReservationService;
+import pw.react.backend.web.GetParkingsResponse;
 import pw.react.backend.web.ParkingLotDto;
 import pw.react.backend.web.ReservationDto;
 import pw.react.backend.web.UserDto;
@@ -37,15 +39,18 @@ public class ParkingLotController {
     }
 
     @GetMapping(path = "/getPage/{pageNo}/sortDescending/{sortDescending}")
-    public ResponseEntity<List<ParkingLotDto>> getParkingLot(@PathVariable int pageNo,
+    public ResponseEntity<GetParkingsResponse> getParkingLot(@PathVariable int pageNo,
                                                              @PathVariable boolean sortDescending,
                                                              @RequestBody String filter) {
-        List<ParkingLot> parkingLots = parkingLotService.getParkingLots(pageNo, sortDescending, filter);
-        List<ParkingLotDto> parkingLotsDto = new ArrayList<ParkingLotDto>();
+        Pair<Integer, List<ParkingLot>> returnedPair =
+            parkingLotService.getParkingLots(pageNo, sortDescending, filter);
+        int noOfPages = returnedPair.getFirst();
+        List<ParkingLot> parkingLots = returnedPair.getSecond();
+        List<ParkingLotDto> parkingLotsDto = new ArrayList<>(parkingLots.size());
         for(ParkingLot parkingLot : parkingLots) {
             parkingLotsDto.add(ParkingLotDto.valueFrom(parkingLot));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(parkingLotsDto);
+        return ResponseEntity.status(HttpStatus.OK).body(new GetParkingsResponse(noOfPages, parkingLotsDto));
     }
 
     @DeleteMapping(path = "/cancel/{parkingId}")
