@@ -30,8 +30,11 @@ public class ReservationController {
 	}
 
 	@GetMapping(path = "/getPage/{pageNo}")
-	public ResponseEntity<GetReservationsResponse> getReservations(@PathVariable int pageNo) {
-		Pair<Integer, List<Reservation>> returnedPair = reservationService.getReservations(pageNo);
+	public ResponseEntity<GetReservationsResponse> getReservations(@PathVariable int pageNo,
+                                                             @RequestParam(required = false,
+																 defaultValue = "-1") String filter) {
+		Pair<Integer, List<Reservation>> returnedPair = reservationService.getReservations(pageNo,
+			Integer.parseInt(filter));
 		int noOfPages = returnedPair.getFirst();
 		List<Reservation> reservations = returnedPair.getSecond();
 		List<ReservationDto> reservationsDto = new ArrayList<>();
