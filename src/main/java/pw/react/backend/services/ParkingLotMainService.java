@@ -6,6 +6,8 @@ import org.springframework.data.util.Pair;
 import pw.react.backend.dao.ParkingLotRepository;
 import pw.react.backend.exceptions.ParkingLotValidationException;
 import pw.react.backend.models.ParkingLot;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,11 +22,12 @@ public class ParkingLotMainService implements ParkingLotService{
     }
 
     @Override
-    public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filter) {
+    public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filterString) {
         if(pageNo <= 0) {
             return null;
         }
         List<ParkingLot> parkingLots = repository.findAll();
+        parkingLots = filter(parkingLots, filterString);
         long startIndex = (pageNo - 1)*50L;
         long endIndex = Math.min(pageNo*50L, parkingLots.size());
         if(startIndex >= parkingLots.size()) return null;
@@ -52,6 +55,17 @@ public class ParkingLotMainService implements ParkingLotService{
             repository.save(parkingLot);
             log.info("Parking lot was saved.");
         }
+    }
+
+    private List<ParkingLot> filter(List<ParkingLot> parkingLots, String filterString) {
+        filterString = filterString.toLowerCase();
+        List<ParkingLot> filteredParkingLots = new ArrayList<>();
+        for(ParkingLot parkingLot : parkingLots) {
+            if(parkingLot.getName().toLowerCase().contains(filterString)) {
+                filteredParkingLots.add(parkingLot);
+            }
+        }
+        return filteredParkingLots;
     }
 
     private boolean isValidParkingLot(ParkingLot parkingLot) {
