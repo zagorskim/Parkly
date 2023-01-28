@@ -5,7 +5,7 @@ import pw.react.backend.models.Reservation;
 import java.util.List;
 
 public interface ReservationService {
-    Pair<Integer, List<Reservation>> getReservations(int pageNo);
+    Pair<Integer, List<Reservation>> getReservations(int pageNo, int filter);
     boolean deleteReservation(Long reservationId);
     boolean createReservation(Reservation reservation);
 }
