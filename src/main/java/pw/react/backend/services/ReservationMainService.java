@@ -28,6 +28,7 @@ public class ReservationMainService implements ReservationService{
     @Override
     public Pair<Integer, List<Reservation>> getReservations(int pageNo) {
         List<Reservation> reservations = repository.findAll();
+        if(pageNo == -1) return Pair.of(-1, reservations); // get all reservations
         int noOfPages = (reservations.size() - 1)/50 + 1;
         if(reservations.size() == 0) noOfPages = 0;
         if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));

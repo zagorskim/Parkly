@@ -24,6 +24,7 @@ public class ParkingLotMainService implements ParkingLotService{
     @Override
     public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filterString) {
         List<ParkingLot> parkingLots = repository.findAll();
+        if(pageNo == -1) return Pair.of(-1, parkingLots); // get all parking lots
         parkingLots = filter(parkingLots, filterString);
         int noOfPages = (parkingLots.size() - 1)/50 + 1;
         if(parkingLots.size() == 0) noOfPages = 0;
