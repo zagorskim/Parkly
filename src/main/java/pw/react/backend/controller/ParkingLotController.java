@@ -41,9 +41,10 @@ public class ParkingLotController {
     @GetMapping(path = "/getPage/{pageNo}/sortDescending/{sortDescending}")
     public ResponseEntity<GetParkingsResponse> getParkingLot(@PathVariable int pageNo,
                                                              @PathVariable boolean sortDescending,
-                                                             @RequestBody Object filter) {
+                                                             @RequestParam(required = false,
+                                                                 defaultValue = "") String filter) {
         Pair<Integer, List<ParkingLot>> returnedPair =
-            parkingLotService.getParkingLots(pageNo, sortDescending, (String)filter);
+            parkingLotService.getParkingLots(pageNo, sortDescending, filter);
         int noOfPages = returnedPair.getFirst();
         List<ParkingLot> parkingLots = returnedPair.getSecond();
         List<ParkingLotDto> parkingLotsDto = new ArrayList<>(parkingLots.size());
