@@ -22,6 +22,11 @@ public class ParkingLotMainService implements ParkingLotService{
     }
 
     @Override
+    public ParkingLot getParkingLot(long parkingId) {
+        return repository.getById(parkingId);
+    }
+
+    @Override
     public Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filterString) {
         List<ParkingLot> parkingLots = repository.findAll();
         if(pageNo == -1) return Pair.of(-1, parkingLots); // get all parking lots
