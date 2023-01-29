@@ -15,6 +15,7 @@ import java.util.List;
 
 public class ReservationMainService implements ReservationService{
 
+    private final int reservationsPerPage = 20;
     private static final Logger log = LoggerFactory.getLogger(UserMainService.class);
 
     private final ReservationRepository repository;
@@ -30,12 +31,12 @@ public class ReservationMainService implements ReservationService{
         List<Reservation> reservations = repository.findAll();
         if(pageNo == -1) return Pair.of(-1, reservations); // get all reservations
         reservations = filter(reservations, filter);
-        int noOfPages = (reservations.size() - 1)/50 + 1;
+        int noOfPages = (reservations.size() - 1)/reservationsPerPage + 1;
         if(reservations.size() == 0) noOfPages = 0;
         if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));
 
-        long startIndex = (pageNo - 1)*50L;
-        long endIndex = Math.min(pageNo*50L, reservations.size());
+        long startIndex = (pageNo - 1)*reservationsPerPage;
+        long endIndex = Math.min(pageNo*reservationsPerPage, reservations.size());
         if(startIndex >= reservations.size()) return Pair.of(noOfPages, new ArrayList<>(0));
 
         Collections.sort(reservations, (r1, r2) -> {

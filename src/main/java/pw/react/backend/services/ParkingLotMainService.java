@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 public class ParkingLotMainService implements ParkingLotService{
 
+    private final int parkingsPerPage = 20;
     private final Logger log = LoggerFactory.getLogger(ParkingLotMainService.class);
 
     private final ParkingLotRepository repository;
@@ -31,12 +33,12 @@ public class ParkingLotMainService implements ParkingLotService{
         List<ParkingLot> parkingLots = repository.findAll();
         if(pageNo == -1) return Pair.of(-1, parkingLots); // get all parking lots
         parkingLots = filter(parkingLots, filterString);
-        int noOfPages = (parkingLots.size() - 1)/50 + 1;
+        int noOfPages = (parkingLots.size() - 1)/parkingsPerPage + 1;
         if(parkingLots.size() == 0) noOfPages = 0;
         if(pageNo <= 0 || noOfPages == 0) return Pair.of(noOfPages, new ArrayList<>(0));
 
-        long startIndex = (pageNo - 1)*50L;
-        long endIndex = Math.min(pageNo*50L, parkingLots.size());
+        long startIndex = (pageNo - 1)*parkingsPerPage;
+        long endIndex = Math.min(pageNo*parkingsPerPage, parkingLots.size());
         if(startIndex >= parkingLots.size()) return Pair.of(noOfPages, new ArrayList<>(0));
 
         Collections.sort(parkingLots, (p1, p2) -> {
