@@ -7,5 +7,5 @@ import java.util.List;
 public interface ReservationService {
     Pair<Integer, List<Reservation>> getReservations(int pageNo, int filter);
     boolean deleteReservation(Long reservationId);
-    boolean createReservation(Reservation reservation);
+    int createReservation(Reservation reservation);
 }

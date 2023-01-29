@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.backend.models.Reservation;
+import pw.react.backend.services.HttpService;
 import pw.react.backend.services.ReservationService;
 import pw.react.backend.web.GetReservationsResponse;
 import pw.react.backend.web.ReservationDto;
@@ -57,11 +58,13 @@ public class ReservationController {
 	@PostMapping(path = "/create")
 	public ResponseEntity<Void> createReservation(@RequestBody ReservationDto reservationDto) {
 		Reservation reservation = ReservationDto.convertToReservation(reservationDto);
-		boolean result = reservationService.createReservation(reservation);
-		if(result) {
+		int result = reservationService.createReservation(reservation);
+		if(result == 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(null);
-		} else {
+		} else if(result == 1) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 }

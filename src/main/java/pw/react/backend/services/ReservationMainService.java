@@ -55,13 +55,12 @@ public class ReservationMainService implements ReservationService{
     }
 
     @Override
-    public boolean createReservation(Reservation reservation) {
-        if(repository.existsById(reservation.getId()) || !isValidReservation(reservation)) {
-            return false;
-        }
+    public int createReservation(Reservation reservation) {
+        int result = isValidReservation(reservation);
+        if(result != 0) return result;
 
         repository.save(reservation);
-        return true;
+        return 0;
     }
 
     private List<Reservation> filter(List<Reservation> reservations, int filterInt) {
@@ -75,36 +74,36 @@ public class ReservationMainService implements ReservationService{
         return filteredReservations;
     }
 
-    private boolean isValidReservation(Reservation reservation) {
+    private int isValidReservation(Reservation reservation) {
         if (reservation != null) {
             Long parkingId = reservation.getParkingId();
-            if (!isValidParkingId(parkingId)) {
+            if(!parkingRepository.existsById(parkingId)) {
                 log.error("Non-existent parking lot (" + parkingId + ").");
-                throw new ReservationValidationException("Non-existent parking lot (" + parkingId + ").");
+                return 2;
             }
-            if (calcDuration(reservation.getStartDate(), reservation.getEndDate()) < 0) {
+            if(calcDuration(reservation.getStartDate(), reservation.getEndDate()) < 0) {
                 log.error("Invalid period.");
-                throw new ReservationValidationException("Invalid period.");
+                return 2;
             }
-            if (!isParkingLotFree(reservation)) {
+            if(!isParkingLotFree(reservation)) {
                 log.error("Parking lot is full.");
-                throw new ReservationValidationException("Parking lot is full.");
+                return 1;
             }
-            return true;
+            if(repository.existsById(reservation.getId())) {
+                log.error("Reservation Id is taken.");
+                return 2;
+            }
+            return 0;
         }
         log.error("Reservation is null.");
-        throw new ReservationValidationException("Reservation is null.");
-    }
-
-    private boolean isValidParkingId(Long parkingId) {
-        return parkingRepository.existsById(parkingId);
+        return 2;
     }
 
     public boolean isParkingLotFree(Reservation reservation) {
        List<Reservation> reservations = repository.findByStartDateBeforeAndEndDateAfterAndParkingIdEquals(
            reservation.getEndDate().plusDays(1), reservation.getStartDate().minusDays(1), reservation.getParkingId());
        int capacity = parkingRepository.getById(reservation.getParkingId()).getCapacity();
-       if(!reservations.isEmpty()) return true;
+       if(reservations.isEmpty()) return true;
        return isSlotFree(reservations.toArray(new Reservation[0]), reservation, capacity);
     }
 
