@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ParkingLotService {
     Pair<Integer, List<ParkingLot>> getParkingLots(int pageNo, boolean sortDescending, String filterString);
+    ParkingLot getParkingLot(long parkingId);
     boolean deleteParkingLot(Long parkingLotId);
     void validateAndSave(ParkingLot convertToParkingLot);
 }

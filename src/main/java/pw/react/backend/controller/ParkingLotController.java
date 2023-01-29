@@ -38,8 +38,18 @@ public class ParkingLotController {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
+    @GetMapping(path = "/get/{parkingId}")
+    public ResponseEntity<ParkingLotDto> getParkingLot(@PathVariable long parkingId) {
+        ParkingLot parkingLot = parkingLotService.getParkingLot(parkingId);
+        if(parkingLot != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ParkingLotDto.valueFrom(parkingLot));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @GetMapping(path = "/getPage/{pageNo}/sortDescending/{sortDescending}")
-    public ResponseEntity<GetParkingsResponse> getParkingLot(@PathVariable int pageNo,
+    public ResponseEntity<GetParkingsResponse> getParkingLots(@PathVariable int pageNo,
                                                              @PathVariable boolean sortDescending,
                                                              @RequestParam(required = false,
                                                                  defaultValue = "") String filter) {
@@ -57,9 +67,10 @@ public class ParkingLotController {
     @DeleteMapping(path = "/cancel/{parkingId}")
     public ResponseEntity<Void> cancelParkingLot(@PathVariable long parkingId) {
         boolean result = parkingLotService.deleteParkingLot(parkingId);
-        if(result)
+        if(result) {
             return ResponseEntity.status(HttpStatus.OK).body(null);
-        else
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
